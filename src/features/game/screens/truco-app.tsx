@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { Camera } from 'expo-camera';
 
 import { palette } from '@/theme/palette';
 import { Scoreboard } from '../components/scoreboard';
@@ -9,6 +9,7 @@ import { AppModal, RusticButton, uiStyles } from '../components/ui';
 import { WoodBackground } from '../components/wood-background';
 import { HistoryModal } from '../components/history-modal';
 import { MatchPhoto } from '../components/match-photo';
+import { WinnerCamera } from '../components/winner-camera';
 import { gameStorage } from '../data/game-storage';
 import { deleteMatchPhoto, persistMatchPhoto } from '../data/photo-storage';
 import { addPoint, continueToThirty, createGame, finishGame, restartGame, sortHistory, subtractPoint } from '../domain/game';
@@ -26,6 +27,7 @@ export function TrucoApp() {
   const [restartOpen, setRestartOpen] = useState(false);
   const [modeOpen, setModeOpen] = useState(false);
   const [takingPhoto, setTakingPhoto] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [setupKey, setSetupKey] = useState(0);
   const [setupDefaults, setSetupDefaults] = useState<{ mode: GameMode; target: GameTarget }>({ mode: '2v2', target: 30 });
 
@@ -97,26 +99,26 @@ export function TrucoApp() {
 
   const takeWinnerPhoto = async () => {
     if (!game || takingPhoto) return;
-    setTakingPhoto(true);
     try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      const permission = await Camera.requestCameraPermissionsAsync();
       if (!permission.granted) {
         Alert.alert('Permiso necesario', 'Necesitamos acceso a la cámara para guardar el recuerdo de la partida.');
         return;
       }
+      setCameraOpen(true);
+    } catch {
+      Alert.alert('No se pudo abrir la cámara', 'Intentá nuevamente. La partida y sus puntos siguen guardados.');
+    }
+  };
 
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        cameraType: ImagePicker.CameraType.back,
-      });
-      if (result.canceled || !result.assets[0]) return;
-
+  const saveWinnerPhoto = async (sourceUri: string) => {
+    if (!game) return;
+    setTakingPhoto(true);
+    try {
       const previousPhoto = game.photoUri;
-      const photoUri = await persistMatchPhoto(result.assets[0].uri, game.id);
+      const photoUri = await persistMatchPhoto(sourceUri, game.id);
       setGame({ ...game, photoUri });
+      setCameraOpen(false);
       if (previousPhoto && previousPhoto !== photoUri) await deleteMatchPhoto(previousPhoto);
     } catch {
       Alert.alert('No se pudo guardar la foto', 'Intentá nuevamente. La partida y sus puntos siguen guardados.');
@@ -174,6 +176,7 @@ export function TrucoApp() {
       )}
 
       <HistoryModal visible={historyOpen} entries={history} onClose={() => setHistoryOpen(false)} onToggleFavorite={toggleFavorite} />
+      <WinnerCamera visible={cameraOpen} onCancel={() => setCameraOpen(false)} onCapture={saveWinnerPhoto} />
 
       <AppModal visible={event.type === 'pika-pika'} onRequestClose={() => setEvent(EMPTY_EVENT)}>
         <Text style={uiStyles.modalTitle}>Mano de PIKA PIKA</Text>
