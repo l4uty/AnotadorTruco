@@ -3,21 +3,21 @@
   "short_name": "Truco",
   "description": "Anotador de Truco argentino para partidas de 1v1, 2v2 y 3v3.",
   "lang": "es-AR",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#3a1e11",
   "theme_color": "#4a2817",
   "icons": [
     {
-      "src": "/truco-icon.png",
+      "src": "./truco-icon.png",
       "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/truco-icon.png",
+      "src": "./truco-icon.png",
       "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "maskable"
