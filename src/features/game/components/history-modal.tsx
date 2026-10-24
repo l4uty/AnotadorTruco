@@ -5,18 +5,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { palette } from '@/theme/palette';
 import { HistoryEntry } from '../domain/types';
 import { MatchPhoto } from './match-photo';
-import { RusticButton } from './ui';
+import { AppModal, RusticButton, uiStyles } from './ui';
 import { WoodBackground } from './wood-background';
 
 const formatter = new Intl.DateTimeFormat('es-AR', {
   day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
 });
 
-export function HistoryModal({ visible, entries, onClose, onToggleFavorite }: {
-  visible: boolean; entries: HistoryEntry[]; onClose: () => void; onToggleFavorite: (id: string) => void;
+export function HistoryModal({ visible, entries, onClose, onToggleFavorite, onDelete }: {
+  visible: boolean;
+  entries: HistoryEntry[];
+  onClose: () => void;
+  onToggleFavorite: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [failedPhotoIds, setFailedPhotoIds] = useState<Set<string>>(() => new Set());
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   if (!visible) return null;
 
   return (
@@ -49,10 +54,16 @@ export function HistoryModal({ visible, entries, onClose, onToggleFavorite }: {
                       <Text style={styles.result}>{item.teams.us.name} {item.teams.us.score} · {item.teams.them.score} {item.teams.them.name}</Text>
                       <Text style={styles.meta}>{item.mode} · a {item.target} · Ganó {winner.name}</Text>
                     </View>
-                    <Pressable accessibilityRole="button" accessibilityLabel={item.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                      onPress={() => onToggleFavorite(item.id)} hitSlop={12} style={styles.starButton}>
-                      <Text style={[styles.star, item.favorite && styles.starActive]}>{item.favorite ? '★' : '☆'}</Text>
-                    </Pressable>
+                    <View style={styles.actions}>
+                      <Pressable accessibilityRole="button" accessibilityLabel={item.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        onPress={() => onToggleFavorite(item.id)} hitSlop={8} style={styles.starButton}>
+                        <Text style={[styles.star, item.favorite && styles.starActive]}>{item.favorite ? '★' : '☆'}</Text>
+                      </Pressable>
+                      <Pressable accessibilityRole="button" accessibilityLabel="Eliminar partida del historial"
+                        onPress={() => setPendingDeleteId(item.id)} hitSlop={8} style={styles.deleteButton}>
+                        <Text style={styles.deleteText}>Eliminar</Text>
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
               );
@@ -68,6 +79,18 @@ export function HistoryModal({ visible, entries, onClose, onToggleFavorite }: {
           <Text style={styles.closePhoto}>Tocá para cerrar</Text>
         </Pressable>
       </Modal>
+
+      <AppModal visible={Boolean(pendingDeleteId)} onRequestClose={() => setPendingDeleteId(null)}>
+        <Text style={uiStyles.modalTitle}>¿Eliminar esta partida?</Text>
+        <Text style={uiStyles.modalText}>Se borrará del historial junto con su foto. Esta acción no se puede deshacer.</Text>
+        <View style={uiStyles.row}>
+          <RusticButton style={styles.confirmButton} onPress={() => setPendingDeleteId(null)}>Cancelar</RusticButton>
+          <RusticButton style={styles.confirmButton} variant="danger" onPress={() => {
+            if (pendingDeleteId) onDelete(pendingDeleteId);
+            setPendingDeleteId(null);
+          }}>Eliminar</RusticButton>
+        </View>
+      </AppModal>
     </View>
   );
 }
@@ -84,6 +107,10 @@ const styles = StyleSheet.create({
   date: { color: palette.creamMuted, fontSize: 12 }, result: { color: palette.cream, fontSize: 17 }, meta: { color: palette.creamMuted, fontSize: 13 },
   starButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }, star: { color: palette.creamMuted, fontSize: 32 },
   starActive: { color: palette.cream },
+  actions: { alignItems: 'center', gap: 4 },
+  deleteButton: { minWidth: 66, minHeight: 34, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  deleteText: { color: palette.danger, fontSize: 12, fontWeight: '600' },
+  confirmButton: { flex: 1 },
   photoViewer: { flex: 1, backgroundColor: 'rgba(10, 5, 2, 0.96)', alignItems: 'center', justifyContent: 'center', padding: 18 },
   fullPhoto: { width: '100%', height: '82%' }, closePhoto: { color: palette.creamMuted, fontSize: 13, marginTop: 12 },
 });

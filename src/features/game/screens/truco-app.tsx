@@ -155,6 +155,19 @@ export function TrucoApp() {
     });
   };
 
+  const deleteHistoryEntry = (id: string) => {
+    setHistory((current) => {
+      const entry = current.find((item) => item.id === id);
+      if (!entry) return current;
+      const next = current.filter((item) => item.id !== id);
+      void Promise.all([
+        gameStorage.saveHistory(next),
+        deleteMatchPhoto(entry.photoUri),
+      ]);
+      return next;
+    });
+  };
+
   if (!hydrated) {
     return <WoodBackground><View style={styles.loading}><ActivityIndicator color={palette.cream} /><Text style={styles.loadingText}>Preparando el anotador…</Text></View></WoodBackground>;
   }
@@ -173,7 +186,8 @@ export function TrucoApp() {
           onStart={startGame} onOpenHistory={openHistory} />
       )}
 
-      <HistoryModal visible={historyOpen} entries={history} onClose={() => setHistoryOpen(false)} onToggleFavorite={toggleFavorite} />
+      <HistoryModal visible={historyOpen} entries={history} onClose={() => setHistoryOpen(false)}
+        onToggleFavorite={toggleFavorite} onDelete={deleteHistoryEntry} />
 
       <AppModal visible={event.type === 'pika-pika'} onRequestClose={() => setEvent(EMPTY_EVENT)}>
         <Text style={uiStyles.modalTitle}>Mano de PIKA PIKA</Text>
