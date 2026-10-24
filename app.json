@@ -39,12 +39,10 @@
         }
       ],
       [
-        "expo-camera",
+        "expo-image-picker",
         {
           "cameraPermission": "Permitir que Truco use la cámara para guardar un recuerdo de la partida.",
-          "microphonePermission": false,
-          "recordAudioAndroid": false,
-          "barcodeScannerEnabled": false
+          "microphonePermission": false
         }
       ]
     ],
