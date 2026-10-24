@@ -47,7 +47,7 @@
       ]
     ],
     "experiments": {
-      "baseUrl": "/https---github.com-l4uty-AnotadorTruco",
+      "baseUrl": "/AnotadorTruco",
       "typedRoutes": true,
       "reactCompiler": true
     },
