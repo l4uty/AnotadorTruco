@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Truco",
+    "slug": "truco-anotador",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/truco-icon.png",
+    "scheme": "truco",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "icon": "./assets/images/truco-icon.png",
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#4A2817",
+        "foregroundImage": "./assets/images/truco-icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "server",
+      "favicon": "./assets/images/truco-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#4A2817",
+          "image": "./assets/images/truco-icon.png",
+          "imageWidth": 120
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
