@@ -9,7 +9,7 @@ export function createId(now = Date.now()): string {
 export function createGame(values: SetupValues, now = new Date()): Game {
   return {
     id: createId(now.getTime()), startedAt: now.toISOString(), mode: values.mode,
-    target: values.target, status: 'playing', winner: null, pikaPikaAnnounced: false,
+    target: values.target, status: 'playing', winner: null, pikaPikaAnnounced: false, photoUri: null,
     teams: {
       us: { name: values.usName.trim() || 'Nosotros', score: 0 },
       them: { name: values.themName.trim() || 'Ellos', score: 0 },
@@ -45,7 +45,7 @@ export function subtractPoint(game: Game, team: TeamId): Game {
 export function restartGame(game: Game, now = new Date()): Game {
   return {
     ...game, id: createId(now.getTime()), startedAt: now.toISOString(), status: 'playing',
-    winner: null, pikaPikaAnnounced: false,
+    winner: null, pikaPikaAnnounced: false, photoUri: null,
     teams: { us: { ...game.teams.us, score: 0 }, them: { ...game.teams.them, score: 0 } },
   };
 }
@@ -65,7 +65,7 @@ export function finishGame(game: Game, now = new Date()): HistoryEntry | null {
   if (game.status !== 'won' || !game.winner) return null;
   return {
     id: game.id, startedAt: game.startedAt, finishedAt: now.toISOString(), mode: game.mode,
-    target: game.target, winner: game.winner, favorite: false, teams: game.teams,
+    target: game.target, winner: game.winner, favorite: false, photoUri: game.photoUri ?? null, teams: game.teams,
   };
 }
 

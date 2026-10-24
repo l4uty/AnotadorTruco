@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { purgeExpiredHistory, sortHistory } from '../domain/game';
 import { Game, HistoryEntry } from '../domain/types';
+import { deleteMatchPhoto } from './photo-storage';
 
 const CURRENT_GAME_KEY = '@truco/current-game/v1';
 const HISTORY_KEY = '@truco/history/v1';
@@ -25,6 +26,8 @@ export const gameStorage = {
     const stored = (await readJson<HistoryEntry[]>(HISTORY_KEY)) ?? [];
     const cleaned = sortHistory(purgeExpiredHistory(stored));
     if (cleaned.length !== stored.length) {
+      const retainedIds = new Set(cleaned.map((entry) => entry.id));
+      await Promise.all(stored.filter((entry) => !retainedIds.has(entry.id)).map((entry) => deleteMatchPhoto(entry.photoUri)));
       await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(cleaned));
     }
     return cleaned;

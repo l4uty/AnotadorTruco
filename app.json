@@ -24,7 +24,8 @@
       "package": "com.l4uty.trucoanotador"
     },
     "web": {
-      "output": "server",
+      "output": "static",
+      "bundler": "metro",
       "favicon": "./assets/images/truco-icon.png"
     },
     "plugins": [
@@ -35,6 +36,13 @@
           "backgroundColor": "#4A2817",
           "image": "./assets/images/truco-icon.png",
           "imageWidth": 120
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Permitir que Truco use la cámara para guardar un recuerdo de la partida.",
+          "microphonePermission": false
         }
       ]
     ],

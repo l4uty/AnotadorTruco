@@ -26,27 +26,34 @@ describe('reglas de la partida', () => {
     expect(second.event.type).toBe('none');
   });
   it('continúa de 15 a 30 conservando puntos', () => {
-    const won = addPoint(withScore(createGame({ ...setup, target: 15 }), 14), 'us').game;
+    const won = { ...addPoint(withScore(createGame({ ...setup, target: 15 }), 14), 'us').game, photoUri: 'file:///recuerdo.jpg' };
     const continued = continueToThirty(won);
     expect(continued.target).toBe(30);
     expect(continued.teams.us.score).toBe(15);
     expect(continued.status).toBe('playing');
     expect(continued.pikaPikaAnnounced).toBe(true);
+    expect(continued.photoUri).toBe('file:///recuerdo.jpg');
   });
   it('permite cambiar a 30 antes de 15 sin suprimir el futuro aviso PIKA PIKA', () => {
     const game = createGame({ ...setup, target: 15 });
     expect(continueToThirty(game).pikaPikaAnnounced).toBe(false);
   });
   it('reinicia puntos y conserva la configuración', () => {
-    const restarted = restartGame(withScore(createGame(setup), 18, 12), new Date('2026-10-23T20:00:00Z'));
+    const game = { ...withScore(createGame(setup), 18, 12), photoUri: 'file:///recuerdo.jpg' };
+    const restarted = restartGame(game, new Date('2026-10-23T20:00:00Z'));
     expect(restarted.teams.us).toEqual({ name: 'Sur', score: 0 });
     expect(restarted.teams.them).toEqual({ name: 'Norte', score: 0 });
     expect([restarted.mode, restarted.target]).toEqual(['3v3', 30]);
+    expect(restarted.photoUri).toBeNull();
   });
   it('solo crea historial para una partida ganada', () => {
     expect(finishGame(createGame(setup))).toBeNull();
     const won = addPoint(withScore(createGame(setup), 29), 'us').game;
     expect(finishGame(won)?.winner).toBe('us');
+  });
+  it('copia la foto de recuerdo al historial', () => {
+    const won = { ...addPoint(withScore(createGame(setup), 29), 'us').game, photoUri: 'file:///recuerdo.jpg' };
+    expect(finishGame(won)?.photoUri).toBe('file:///recuerdo.jpg');
   });
 });
 

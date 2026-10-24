@@ -6,11 +6,13 @@ export type TeamState = { name: string; score: number };
 export type Game = {
   id: string; startedAt: string; mode: GameMode; target: GameTarget;
   status: GameStatus; winner: TeamId | null; pikaPikaAnnounced: boolean;
+  photoUri?: string | null;
   teams: Record<TeamId, TeamState>;
 };
 export type HistoryEntry = {
   id: string; startedAt: string; finishedAt: string; mode: GameMode;
   target: GameTarget; winner: TeamId; favorite: boolean;
+  photoUri?: string | null;
   teams: Record<TeamId, TeamState>;
 };
 export type SetupValues = { mode: GameMode; target: GameTarget; usName: string; themName: string };

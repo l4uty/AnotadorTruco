@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 import { palette } from '@/theme/palette';
 import { Scoreboard } from '../components/scoreboard';
@@ -7,7 +8,9 @@ import { SetupScreen } from '../components/setup-screen';
 import { AppModal, RusticButton, uiStyles } from '../components/ui';
 import { WoodBackground } from '../components/wood-background';
 import { HistoryModal } from '../components/history-modal';
+import { MatchPhoto } from '../components/match-photo';
 import { gameStorage } from '../data/game-storage';
+import { deleteMatchPhoto, persistMatchPhoto } from '../data/photo-storage';
 import { addPoint, continueToThirty, createGame, finishGame, restartGame, sortHistory, subtractPoint } from '../domain/game';
 import { Game, GameEvent, GameMode, GameTarget, HistoryEntry, SetupValues, TeamId } from '../domain/types';
 
@@ -22,6 +25,7 @@ export function TrucoApp() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [restartOpen, setRestartOpen] = useState(false);
   const [modeOpen, setModeOpen] = useState(false);
+  const [takingPhoto, setTakingPhoto] = useState(false);
   const [setupKey, setSetupKey] = useState(0);
   const [setupDefaults, setSetupDefaults] = useState<{ mode: GameMode; target: GameTarget }>({ mode: '2v2', target: 30 });
 
@@ -91,12 +95,43 @@ export function TrucoApp() {
       : EMPTY_EVENT);
   };
 
+  const takeWinnerPhoto = async () => {
+    if (!game || takingPhoto) return;
+    setTakingPhoto(true);
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permiso necesario', 'Necesitamos acceso a la cámara para guardar el recuerdo de la partida.');
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+        cameraType: ImagePicker.CameraType.back,
+      });
+      if (result.canceled || !result.assets[0]) return;
+
+      const previousPhoto = game.photoUri;
+      const photoUri = await persistMatchPhoto(result.assets[0].uri, game.id);
+      setGame({ ...game, photoUri });
+      if (previousPhoto && previousPhoto !== photoUri) await deleteMatchPhoto(previousPhoto);
+    } catch {
+      Alert.alert('No se pudo guardar la foto', 'Intentá nuevamente. La partida y sus puntos siguen guardados.');
+    } finally {
+      setTakingPhoto(false);
+    }
+  };
+
   const openHistory = () => {
     setHistoryOpen(true);
     void gameStorage.loadHistory().then(setHistory);
   };
 
   const selectMode = (mode: GameMode) => {
+    void deleteMatchPhoto(game?.photoUri);
     setSetupDefaults({ mode, target: game?.target ?? 30 });
     setModeOpen(false);
     setGame(null);
@@ -105,6 +140,7 @@ export function TrucoApp() {
   };
 
   const confirmRestart = () => {
+    void deleteMatchPhoto(game?.photoUri);
     if (game) setGame(restartGame(game));
     setRestartOpen(false);
     setMenuOpen(false);
@@ -148,6 +184,10 @@ export function TrucoApp() {
       <AppModal visible={event.type === 'winner'}>
         <Text style={uiStyles.modalTitle}>{game?.winner ? `¡Ganó ${game.teams[game.winner].name}!` : 'Partida terminada'}</Text>
         <Text style={uiStyles.modalText}>Resultado final: {game?.teams.us.score} a {game?.teams.them.score}</Text>
+        {game?.photoUri && <MatchPhoto storedUri={game.photoUri} style={styles.winnerPhoto} />}
+        <RusticButton disabled={takingPhoto} onPress={() => void takeWinnerPhoto()}>
+          {takingPhoto ? 'Guardando foto…' : game?.photoUri ? 'Cambiar foto' : 'Sacar una foto'}
+        </RusticButton>
         {game?.target === 15 && <RusticButton variant="filled" onPress={handleContinueToThirty}>Continuar hasta 30</RusticButton>}
         <RusticButton variant={game?.target === 30 ? 'filled' : 'outline'} onPress={newGame}>Nueva partida</RusticButton>
       </AppModal>
@@ -182,4 +222,5 @@ const styles = StyleSheet.create({
   loadingText: { color: palette.creamMuted, fontSize: 14 }, flexButton: { flex: 1 },
   modeRow: { flexDirection: 'row', gap: 8 }, modeChoice: { flex: 1, height: 54, borderWidth: 1, borderColor: palette.creamMuted,
     borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, modeText: { color: palette.cream, fontSize: 17 }, pressed: { opacity: 0.6 },
+  winnerPhoto: { width: '100%', height: 150, borderRadius: 8, backgroundColor: palette.woodDark },
 });
