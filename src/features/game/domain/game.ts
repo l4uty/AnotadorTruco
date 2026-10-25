@@ -42,6 +42,15 @@ export function subtractPoint(game: Game, team: TeamId): Game {
   };
 }
 
+export function renameTeam(game: Game, team: TeamId, name: string): Game {
+  const nextName = name.trim();
+  if (!nextName) return game;
+  return {
+    ...game,
+    teams: { ...game.teams, [team]: { ...game.teams[team], name: nextName } },
+  };
+}
+
 export function restartGame(game: Game, now = new Date()): Game {
   return {
     ...game, id: createId(now.getTime()), startedAt: now.toISOString(), status: 'playing',

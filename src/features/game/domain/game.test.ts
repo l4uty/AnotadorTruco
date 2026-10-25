@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { addPoint, continueToThirty, createGame, finishGame, purgeExpiredHistory, restartGame, sortHistory, subtractPoint } from './game';
+import { addPoint, continueToThirty, createGame, finishGame, purgeExpiredHistory, renameTeam, restartGame, sortHistory, subtractPoint } from './game';
 import { Game, HistoryEntry } from './types';
 
 vi.spyOn(Math, 'random').mockReturnValue(0.12345);
@@ -18,6 +18,12 @@ describe('reglas de la partida', () => {
   });
   it('nunca resta por debajo de cero', () => {
     expect(subtractPoint(createGame(setup), 'them').teams.them.score).toBe(0);
+  });
+  it('edita un nombre sin modificar el puntaje y lo conserva en el historial', () => {
+    const renamed = renameTeam(withScore(createGame(setup), 29, 8), 'us', '  Campeones  ');
+    const won = addPoint(renamed, 'us').game;
+    expect(renamed.teams.us).toEqual({ name: 'Campeones', score: 29 });
+    expect(finishGame(won)?.teams.us.name).toBe('Campeones');
   });
   it('anuncia PIKA PIKA una sola vez al llegar primero a 15 en 3v3 a 30', () => {
     const first = addPoint(withScore(createGame(setup), 14), 'us');

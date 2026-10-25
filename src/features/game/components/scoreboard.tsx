@@ -12,13 +12,14 @@ type ScoreboardProps = {
   onToggleMenu: () => void;
   onAdd: (team: TeamId) => void;
   onSubtract: (team: TeamId) => void;
+  onEditName: (team: TeamId) => void;
   onRestart: () => void;
   onChangeMode: () => void;
   onHistory: () => void;
   onContinueToThirty: () => void;
 };
 
-export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, onRestart, onChangeMode, onHistory, onContinueToThirty }: ScoreboardProps) {
+export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, onEditName, onRestart, onChangeMode, onHistory, onContinueToThirty }: ScoreboardProps) {
   const { width, height } = useWindowDimensions();
   const shortScreen = height < 700;
   const groupSize = Math.round(Math.min(64, Math.max(36, Math.min(width * 0.13, height / (game.target === 30 ? 15.5 : 10)))));
@@ -57,9 +58,9 @@ export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, on
           </View>
 
           <View style={styles.teams}>
-            <TeamColumn id="us" game={game} groupSize={groupSize} teamHeaderHeight={teamHeaderHeight} onAdd={onAdd} onSubtract={onSubtract} />
+            <TeamColumn id="us" game={game} groupSize={groupSize} teamHeaderHeight={teamHeaderHeight} onAdd={onAdd} onSubtract={onSubtract} onEditName={onEditName} />
             <View style={styles.centerLine} />
-            <TeamColumn id="them" game={game} groupSize={groupSize} teamHeaderHeight={teamHeaderHeight} onAdd={onAdd} onSubtract={onSubtract} />
+            <TeamColumn id="them" game={game} groupSize={groupSize} teamHeaderHeight={teamHeaderHeight} onAdd={onAdd} onSubtract={onSubtract} onEditName={onEditName} />
           </View>
           <Text style={styles.hint}>Tocá tu lado para sumar</Text>
         </View>
@@ -68,19 +69,26 @@ export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, on
   );
 }
 
-function TeamColumn({ id, game, groupSize, teamHeaderHeight, onAdd, onSubtract }: {
+function TeamColumn({ id, game, groupSize, teamHeaderHeight, onAdd, onSubtract, onEditName }: {
   id: TeamId;
   game: Game;
   groupSize: number;
   teamHeaderHeight: number;
   onAdd: (team: TeamId) => void;
   onSubtract: (team: TeamId) => void;
+  onEditName: (team: TeamId) => void;
 }) {
   const team = game.teams[id];
   return (
     <View style={styles.column}>
       <View style={[styles.teamHeader, { height: teamHeaderHeight }]}>
-        <Text style={styles.teamName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{team.name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.teamName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{team.name}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Editar nombre de ${team.name}`}
+            hitSlop={8} onPress={() => onEditName(id)} style={({ pressed }) => [styles.editNameButton, pressed && styles.pressed]}>
+            <Text style={styles.editNameIcon}>✎</Text>
+          </Pressable>
+        </View>
         <Text style={styles.score}>{team.score}</Text>
       </View>
       <Pressable accessibilityRole="button" accessibilityLabel={`Sumar punto a ${team.name}`}
@@ -125,7 +133,10 @@ const styles = StyleSheet.create({
   centerLine: { width: 1, backgroundColor: palette.line, marginVertical: 12 },
   column: { flex: 1, alignItems: 'center', paddingHorizontal: 4, backgroundColor: 'rgba(20, 23, 28, 0.74)', borderWidth: 1, borderColor: palette.line, borderRadius: 18 },
   teamHeader: { alignItems: 'center', justifyContent: 'center', width: '100%' },
-  teamName: { color: palette.text, fontSize: 19, fontWeight: '500', maxWidth: '88%' },
+  nameRow: { width: '90%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  teamName: { color: palette.text, fontSize: 19, fontWeight: '500', flexShrink: 1 },
+  editNameButton: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
+  editNameIcon: { color: palette.accentBright, fontSize: 19, lineHeight: 22 },
   score: { color: palette.accentBright, fontSize: 32, fontWeight: '600', lineHeight: 39, marginTop: 1 },
   scoreArea: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 14 },
   pressed: { opacity: 0.62 },

@@ -12,13 +12,13 @@
   "icons": [
     {
       "src": "./truco-icon.png",
-      "sizes": "1254x1254",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "./truco-icon.png",
-      "sizes": "1254x1254",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     }

@@ -1,6 +1,6 @@
 // TypeScript contract and unsupported-platform fallback.
 // Metro selects photo-storage.native.ts or photo-storage.web.ts at runtime.
-export async function persistMatchPhoto(_sourceUri: string, _gameId: string): Promise<string> {
+export async function persistMatchPhoto(_sourceUri: string, _gameId: string, _unmirrorFrontCamera = false): Promise<string> {
   throw new Error('Photo storage is not available on this platform.');
 }
 

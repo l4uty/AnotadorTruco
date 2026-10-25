@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 import { palette } from '@/theme/palette';
@@ -11,7 +11,7 @@ import { HistoryModal } from '../components/history-modal';
 import { MatchPhoto } from '../components/match-photo';
 import { gameStorage } from '../data/game-storage';
 import { deleteMatchPhoto, persistMatchPhoto } from '../data/photo-storage';
-import { addPoint, continueToThirty, createGame, finishGame, restartGame, sortHistory, subtractPoint } from '../domain/game';
+import { addPoint, continueToThirty, createGame, finishGame, renameTeam, restartGame, sortHistory, subtractPoint } from '../domain/game';
 import { Game, GameEvent, GameMode, GameTarget, HistoryEntry, SetupValues, TeamId } from '../domain/types';
 
 const EMPTY_EVENT: GameEvent = { type: 'none' };
@@ -25,6 +25,9 @@ export function TrucoApp() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [restartOpen, setRestartOpen] = useState(false);
   const [modeOpen, setModeOpen] = useState(false);
+  const [cameraChoiceOpen, setCameraChoiceOpen] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<TeamId | null>(null);
+  const [editingName, setEditingName] = useState('');
   const [takingPhoto, setTakingPhoto] = useState(false);
   const [setupKey, setSetupKey] = useState(0);
   const [setupDefaults, setSetupDefaults] = useState<{ mode: GameMode; target: GameTarget }>({ mode: '2v2', target: 30 });
@@ -95,8 +98,9 @@ export function TrucoApp() {
       : EMPTY_EVENT);
   };
 
-  const takeWinnerPhoto = async () => {
+  const takeWinnerPhoto = async (cameraType: ImagePicker.CameraType) => {
     if (!game || takingPhoto) return;
+    setCameraChoiceOpen(false);
     setTakingPhoto(true);
     try {
       const permission = await ImagePicker.requestCameraPermissionsAsync();
@@ -110,12 +114,16 @@ export function TrucoApp() {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
-        cameraType: ImagePicker.CameraType.back,
+        cameraType,
       });
       if (result.canceled || !result.assets[0]) return;
 
       const previousPhoto = game.photoUri;
-      const photoUri = await persistMatchPhoto(result.assets[0].uri, game.id);
+      const photoUri = await persistMatchPhoto(
+        result.assets[0].uri,
+        game.id,
+        cameraType === ImagePicker.CameraType.front,
+      );
       setGame({ ...game, photoUri });
       if (previousPhoto && previousPhoto !== photoUri) await deleteMatchPhoto(previousPhoto);
     } catch {
@@ -128,6 +136,19 @@ export function TrucoApp() {
   const openHistory = () => {
     setHistoryOpen(true);
     void gameStorage.loadHistory().then(setHistory);
+  };
+
+  const openNameEditor = (team: TeamId) => {
+    if (!game) return;
+    setEditingTeam(team);
+    setEditingName(game.teams[team].name);
+  };
+
+  const saveEditedName = () => {
+    if (!editingTeam || !editingName.trim()) return;
+    setGame((current) => current ? renameTeam(current, editingTeam, editingName) : current);
+    setEditingTeam(null);
+    setEditingName('');
   };
 
   const selectMode = (mode: GameMode) => {
@@ -177,6 +198,7 @@ export function TrucoApp() {
       {game ? (
         <Scoreboard game={game} menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((open) => !open)}
           onAdd={score} onSubtract={subtract}
+          onEditName={openNameEditor}
           onRestart={() => { setMenuOpen(false); setRestartOpen(true); }}
           onChangeMode={() => { setMenuOpen(false); setModeOpen(true); }}
           onHistory={() => { setMenuOpen(false); openHistory(); }}
@@ -195,15 +217,35 @@ export function TrucoApp() {
         <RusticButton variant="filled" onPress={() => setEvent(EMPTY_EVENT)}>Entendido</RusticButton>
       </AppModal>
 
-      <AppModal visible={event.type === 'winner'}>
+      <AppModal visible={event.type === 'winner' && !cameraChoiceOpen}>
         <Text style={uiStyles.modalTitle}>{game?.winner ? `¡Ganó ${game.teams[game.winner].name}!` : 'Partida terminada'}</Text>
         <Text style={uiStyles.modalText}>Resultado final: {game?.teams.us.score} a {game?.teams.them.score}</Text>
         {game?.photoUri && <MatchPhoto storedUri={game.photoUri} style={styles.winnerPhoto} />}
-        <RusticButton disabled={takingPhoto} onPress={() => void takeWinnerPhoto()}>
+        <RusticButton disabled={takingPhoto} onPress={() => setCameraChoiceOpen(true)}>
           {takingPhoto ? 'Guardando foto…' : game?.photoUri ? 'Cambiar foto' : 'Sacar una foto'}
         </RusticButton>
         {game?.target === 15 && <RusticButton variant="filled" onPress={handleContinueToThirty}>Continuar hasta 30</RusticButton>}
         <RusticButton variant={game?.target === 30 ? 'filled' : 'outline'} onPress={newGame}>Nueva partida</RusticButton>
+      </AppModal>
+
+      <AppModal visible={cameraChoiceOpen} onRequestClose={() => setCameraChoiceOpen(false)}>
+        <Text style={uiStyles.modalTitle}>Elegir cámara</Text>
+        <Text style={uiStyles.modalText}>La corrección de espejo se aplica únicamente cuando elegís la cámara frontal.</Text>
+        <RusticButton variant="filled" onPress={() => void takeWinnerPhoto(ImagePicker.CameraType.back)}>Cámara trasera</RusticButton>
+        <RusticButton variant="outline" onPress={() => void takeWinnerPhoto(ImagePicker.CameraType.front)}>Cámara frontal</RusticButton>
+        <RusticButton variant="ghost" onPress={() => setCameraChoiceOpen(false)}>Cancelar</RusticButton>
+      </AppModal>
+
+      <AppModal visible={editingTeam !== null} onRequestClose={() => setEditingTeam(null)}>
+        <Text style={uiStyles.modalTitle}>Editar nombre</Text>
+        <Text style={uiStyles.modalText}>El cambio se guardará en la partida actual y luego en su historial.</Text>
+        <TextInput value={editingName} onChangeText={setEditingName} maxLength={22} autoFocus selectTextOnFocus
+          placeholder={editingTeam === 'us' ? 'Nosotros' : 'Ellos'} placeholderTextColor={palette.textMuted}
+          style={styles.nameInput} onSubmitEditing={saveEditedName} returnKeyType="done" />
+        <View style={uiStyles.row}>
+          <RusticButton style={styles.flexButton} onPress={() => setEditingTeam(null)}>Cancelar</RusticButton>
+          <RusticButton style={styles.flexButton} variant="filled" disabled={!editingName.trim()} onPress={saveEditedName}>Guardar</RusticButton>
+        </View>
       </AppModal>
 
       <AppModal visible={restartOpen} onRequestClose={() => setRestartOpen(false)}>
@@ -237,4 +279,6 @@ const styles = StyleSheet.create({
   modeRow: { flexDirection: 'row', gap: 8 }, modeChoice: { flex: 1, height: 54, borderWidth: 1, borderColor: palette.lineStrong,
     borderRadius: 12, backgroundColor: palette.surfaceSoft, alignItems: 'center', justifyContent: 'center' }, modeText: { color: palette.text, fontSize: 17 }, pressed: { opacity: 0.6 },
   winnerPhoto: { width: '100%', height: 150, borderRadius: 12, backgroundColor: palette.surfaceSoft },
+  nameInput: { minHeight: 50, borderWidth: 1, borderColor: palette.lineStrong, borderRadius: 11,
+    color: palette.text, backgroundColor: palette.surfaceSoft, paddingHorizontal: 14, fontSize: 17 },
 });

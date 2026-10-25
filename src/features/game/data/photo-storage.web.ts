@@ -8,8 +8,8 @@ function isIosBrowser(): boolean {
   return appleMobileDevice || ipadUsingDesktopMode;
 }
 
-async function removeIosMirrorEffect(blob: Blob): Promise<Blob> {
-  if (!isIosBrowser()) return blob;
+async function removeIosFrontCameraMirror(blob: Blob, unmirrorFrontCamera: boolean): Promise<Blob> {
+  if (!isIosBrowser() || !unmirrorFrontCamera) return blob;
 
   const sourceUrl = URL.createObjectURL(blob);
   try {
@@ -55,9 +55,9 @@ function photoKey(uri: string): string | null {
   return uri.startsWith(URI_PREFIX) ? uri.slice(URI_PREFIX.length) : null;
 }
 
-export async function persistMatchPhoto(sourceUri: string, gameId: string): Promise<string> {
+export async function persistMatchPhoto(sourceUri: string, gameId: string, unmirrorFrontCamera = false): Promise<string> {
   const response = await fetch(sourceUri);
-  const blob = await removeIosMirrorEffect(await response.blob());
+  const blob = await removeIosFrontCameraMirror(await response.blob(), unmirrorFrontCamera);
   const key = `${gameId}-${Date.now()}`;
   const database = await openDatabase();
 

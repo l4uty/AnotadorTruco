@@ -33,7 +33,7 @@ export function TallyStack({ score, target, groupSize = 58 }: {
         const y1 = top + inset;
         const y2 = top + groupSize - inset;
         const matches = [
-          [x1, y1, x1, y2],
+          [x1, y2, x1, y1],
           [x1, y1, x2, y1],
           [x2, y1, x2, y2],
           [x2, y2, x1, y2],

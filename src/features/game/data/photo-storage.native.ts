@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
-export async function persistMatchPhoto(sourceUri: string, gameId: string): Promise<string> {
+export async function persistMatchPhoto(sourceUri: string, gameId: string, _unmirrorFrontCamera = false): Promise<string> {
   const photosDirectory = new Directory(Paths.document, 'match-photos');
   photosDirectory.create({ idempotent: true, intermediates: true });
   const extension = Paths.extname(sourceUri).toLowerCase();
