@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8, zIndex: 4 },
   title: { color: palette.text, fontWeight: '600', letterSpacing: 0.3, lineHeight: 31 },
   targetSelector: { flexDirection: 'row', borderWidth: 1, borderColor: palette.lineStrong, borderRadius: 10, overflow: 'hidden', marginTop: 7, backgroundColor: palette.surfaceSoft },
-  targetChoice: { width: 53, height: 34, alignItems: 'center', justifyContent: 'center' },
+  targetChoice: { width: 56, height: 40, alignItems: 'center', justifyContent: 'center' },
   targetSelected: { backgroundColor: palette.accent },
   targetText: { color: palette.textMuted, fontSize: 17 }, targetTextSelected: { color: palette.ink, fontWeight: '700' },
   modeLabel: { color: palette.accentBright, fontSize: 10, letterSpacing: 1.5, marginTop: 4, textTransform: 'uppercase' },
