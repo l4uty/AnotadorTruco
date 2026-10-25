@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   buttonText: { color: palette.text, fontSize: 15, fontWeight: '500', letterSpacing: 0.2 },
   filledText: { color: palette.ink, fontWeight: '700' },
   pressed: { opacity: 0.7 }, disabled: { opacity: 0.4 },
-  modalBackdrop: { flex: 1, backgroundColor: palette.overlay, justifyContent: 'center', padding: 24 },
+  modalBackdrop: { flex: 1, backgroundColor: palette.overlay, alignItems: 'center', justifyContent: 'center', padding: 24 },
   modalPanel: { backgroundColor: palette.panel, borderWidth: 1, borderColor: palette.lineStrong, borderRadius: 18,
-    padding: 22, gap: 14, maxWidth: 480, alignSelf: 'stretch' },
+    padding: 22, gap: 14, width: '100%', maxWidth: 480 },
 });
