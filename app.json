@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#4A2817",
+        "backgroundColor": "#090A0D",
         "foregroundImage": "./assets/images/truco-icon.png"
       },
       "predictiveBackGestureEnabled": false,
@@ -33,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#4A2817",
+          "backgroundColor": "#090A0D",
           "image": "./assets/images/truco-icon.png",
           "imageWidth": 120
         }

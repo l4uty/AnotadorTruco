@@ -3,8 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { palette } from '@/theme/palette';
 import { Game, TeamId } from '../domain/types';
+import { AppBackground } from './app-background';
 import { TallyStack } from './tally';
-import { WoodBackground } from './wood-background';
 
 type ScoreboardProps = {
   game: Game;
@@ -26,9 +26,9 @@ export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, on
   const teamHeaderHeight = shortScreen ? 68 : 82;
 
   return (
-    <WoodBackground>
+    <AppBackground>
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <View style={styles.board}>
+        <View style={[styles.board, { width: Math.min(width, 700) }]}>
           <View style={[styles.header, { height: headerHeight }]}>
             <Text style={[styles.title, { fontSize: Math.min(25, Math.max(19, width * 0.052)) }]}>Truco anotador</Text>
             <View style={styles.targetSelector}>
@@ -64,7 +64,7 @@ export function Scoreboard({ game, menuOpen, onToggleMenu, onAdd, onSubtract, on
           <Text style={styles.hint}>Tocá tu lado para sumar</Text>
         </View>
       </SafeAreaView>
-    </WoodBackground>
+    </AppBackground>
   );
 }
 
@@ -107,30 +107,30 @@ function MenuItem({ label, onPress, danger }: { label: string; onPress: () => vo
 
 const styles = StyleSheet.create({
   safe: { flex: 1, alignItems: 'center' },
-  board: { flex: 1, width: '100%', maxWidth: 700 },
+  board: { flex: 1 },
   header: { alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8, zIndex: 4 },
-  title: { color: palette.cream, letterSpacing: 0.2, lineHeight: 31 },
-  targetSelector: { flexDirection: 'row', borderWidth: 1, borderColor: palette.creamMuted, borderRadius: 7, overflow: 'hidden', marginTop: 7 },
-  targetChoice: { width: 53, height: 34, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(47, 22, 10, 0.35)' },
-  targetSelected: { backgroundColor: palette.creamMuted },
-  targetText: { color: palette.cream, fontSize: 17 }, targetTextSelected: { color: palette.ink },
-  modeLabel: { color: palette.creamMuted, fontSize: 10, letterSpacing: 1.2, marginTop: 3, textTransform: 'uppercase' },
+  title: { color: palette.text, fontWeight: '600', letterSpacing: 0.3, lineHeight: 31 },
+  targetSelector: { flexDirection: 'row', borderWidth: 1, borderColor: palette.lineStrong, borderRadius: 10, overflow: 'hidden', marginTop: 7, backgroundColor: palette.surfaceSoft },
+  targetChoice: { width: 53, height: 34, alignItems: 'center', justifyContent: 'center' },
+  targetSelected: { backgroundColor: palette.accent },
+  targetText: { color: palette.textMuted, fontSize: 17 }, targetTextSelected: { color: palette.ink, fontWeight: '700' },
+  modeLabel: { color: palette.accentBright, fontSize: 10, letterSpacing: 1.5, marginTop: 4, textTransform: 'uppercase' },
   menuButton: { position: 'absolute', right: 10, top: 3, width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-  menuIcon: { color: palette.cream, fontSize: 23, opacity: 0.88 },
+  menuIcon: { color: palette.text, fontSize: 23, opacity: 0.92 },
   menu: { position: 'absolute', right: 14, top: 48, width: 210, backgroundColor: palette.panel,
     borderWidth: 1, borderColor: palette.line, borderRadius: 8, overflow: 'hidden' },
   menuItem: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.line },
-  menuText: { color: palette.cream, fontSize: 14 }, danger: { color: palette.danger },
-  teams: { flex: 1, flexDirection: 'row', paddingBottom: 4 },
-  centerLine: { width: 1.25, backgroundColor: 'rgba(25, 10, 4, 0.82)' },
-  column: { flex: 1, alignItems: 'center', paddingHorizontal: 4 },
+  menuText: { color: palette.text, fontSize: 14 }, danger: { color: palette.danger },
+  teams: { flex: 1, flexDirection: 'row', paddingHorizontal: 10, paddingBottom: 4, gap: 8 },
+  centerLine: { width: 1, backgroundColor: palette.line, marginVertical: 12 },
+  column: { flex: 1, alignItems: 'center', paddingHorizontal: 4, backgroundColor: 'rgba(20, 23, 28, 0.74)', borderWidth: 1, borderColor: palette.line, borderRadius: 18 },
   teamHeader: { alignItems: 'center', justifyContent: 'center', width: '100%' },
-  teamName: { color: palette.cream, fontSize: 19, maxWidth: '88%' },
-  score: { color: palette.cream, fontSize: 32, lineHeight: 39, marginTop: 1 },
+  teamName: { color: palette.text, fontSize: 19, fontWeight: '500', maxWidth: '88%' },
+  score: { color: palette.accentBright, fontSize: 32, fontWeight: '600', lineHeight: 39, marginTop: 1 },
   scoreArea: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 14 },
   pressed: { opacity: 0.62 },
-  minusButton: { width: 58, height: 52, borderWidth: 1.5, borderColor: palette.cream, borderRadius: 7,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 8, backgroundColor: 'rgba(45, 20, 9, 0.16)' },
-  minus: { color: palette.cream, fontSize: 28, lineHeight: 30 },
-  hint: { color: palette.cream, opacity: 0.88, fontSize: 12, letterSpacing: 0.7, textAlign: 'center', paddingVertical: 8 },
+  minusButton: { width: 58, height: 48, borderWidth: 1, borderColor: palette.lineStrong, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 10, backgroundColor: palette.surfaceRaised },
+  minus: { color: palette.text, fontSize: 28, lineHeight: 30 },
+  hint: { color: palette.textMuted, fontSize: 12, letterSpacing: 0.7, textAlign: 'center', paddingVertical: 9 },
 });

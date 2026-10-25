@@ -6,7 +6,7 @@ import { palette } from '@/theme/palette';
 import { Scoreboard } from '../components/scoreboard';
 import { SetupScreen } from '../components/setup-screen';
 import { AppModal, RusticButton, uiStyles } from '../components/ui';
-import { WoodBackground } from '../components/wood-background';
+import { AppBackground } from '../components/app-background';
 import { HistoryModal } from '../components/history-modal';
 import { MatchPhoto } from '../components/match-photo';
 import { gameStorage } from '../data/game-storage';
@@ -169,7 +169,7 @@ export function TrucoApp() {
   };
 
   if (!hydrated) {
-    return <WoodBackground><View style={styles.loading}><ActivityIndicator color={palette.cream} /><Text style={styles.loadingText}>Preparando el anotador…</Text></View></WoodBackground>;
+    return <AppBackground><View style={styles.loading}><ActivityIndicator color={palette.accent} /><Text style={styles.loadingText}>Preparando el anotador…</Text></View></AppBackground>;
   }
 
   return (
@@ -233,8 +233,8 @@ export function TrucoApp() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 }, loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  loadingText: { color: palette.creamMuted, fontSize: 14 }, flexButton: { flex: 1 },
-  modeRow: { flexDirection: 'row', gap: 8 }, modeChoice: { flex: 1, height: 54, borderWidth: 1, borderColor: palette.creamMuted,
-    borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, modeText: { color: palette.cream, fontSize: 17 }, pressed: { opacity: 0.6 },
-  winnerPhoto: { width: '100%', height: 150, borderRadius: 8, backgroundColor: palette.woodDark },
+  loadingText: { color: palette.textMuted, fontSize: 14 }, flexButton: { flex: 1 },
+  modeRow: { flexDirection: 'row', gap: 8 }, modeChoice: { flex: 1, height: 54, borderWidth: 1, borderColor: palette.lineStrong,
+    borderRadius: 12, backgroundColor: palette.surfaceSoft, alignItems: 'center', justifyContent: 'center' }, modeText: { color: palette.text, fontSize: 17 }, pressed: { opacity: 0.6 },
+  winnerPhoto: { width: '100%', height: 150, borderRadius: 12, backgroundColor: palette.surfaceSoft },
 });

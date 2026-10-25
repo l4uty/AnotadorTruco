@@ -10,7 +10,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#4a2817" />
+        <meta name="theme-color" content="#090a0d" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -19,7 +19,7 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="apple-touch-icon" href="./truco-icon.png" />
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: `
-          html, body, #root { width: 100%; min-height: 100%; margin: 0; background: #3a1e11; }
+          html, body, #root { width: 100%; min-height: 100%; margin: 0; background: #090a0d; }
           body { overflow: hidden; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
         ` }} />
         {headNodes}

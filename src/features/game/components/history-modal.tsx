@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { palette } from '@/theme/palette';
 import { HistoryEntry } from '../domain/types';
+import { AppBackground } from './app-background';
 import { MatchPhoto } from './match-photo';
 import { AppModal, RusticButton, uiStyles } from './ui';
-import { WoodBackground } from './wood-background';
 
 const formatter = new Intl.DateTimeFormat('es-AR', {
   day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -26,7 +26,7 @@ export function HistoryModal({ visible, entries, onClose, onToggleFavorite, onDe
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <WoodBackground>
+      <AppBackground>
         <SafeAreaView style={styles.safe}>
           <View style={styles.header}>
             <RusticButton variant="ghost" onPress={onClose} accessibilityLabel="Cerrar historial">‹ Volver</RusticButton>
@@ -70,7 +70,7 @@ export function HistoryModal({ visible, entries, onClose, onToggleFavorite, onDe
             }}
           />
         </SafeAreaView>
-      </WoodBackground>
+      </AppBackground>
 
       <Modal visible={Boolean(selectedPhoto)} transparent animationType="fade" onRequestClose={() => setSelectedPhoto(null)}>
         <Pressable accessibilityRole="button" accessibilityLabel="Cerrar foto" style={styles.photoViewer}
@@ -98,19 +98,19 @@ export function HistoryModal({ visible, entries, onClose, onToggleFavorite, onDe
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: 4 },
-  title: { color: palette.cream, fontSize: 22 }, headerSpacer: { width: 88 },
-  note: { color: palette.creamMuted, fontSize: 12, textAlign: 'center', marginHorizontal: 24, marginTop: 4 },
-  list: { padding: 18, gap: 12, flexGrow: 1 }, empty: { color: palette.creamMuted, textAlign: 'center', marginTop: 80 },
-  card: { backgroundColor: 'rgba(39, 17, 8, 0.72)', borderWidth: 1, borderColor: palette.line, borderRadius: 9, overflow: 'hidden' },
-  photo: { width: '100%', height: 170, backgroundColor: palette.woodDark },
+  title: { color: palette.text, fontSize: 22, fontWeight: '600' }, headerSpacer: { width: 88 },
+  note: { color: palette.textMuted, fontSize: 12, textAlign: 'center', marginHorizontal: 24, marginTop: 4 },
+  list: { padding: 18, gap: 12, flexGrow: 1 }, empty: { color: palette.textMuted, textAlign: 'center', marginTop: 80 },
+  card: { backgroundColor: 'rgba(20, 23, 28, 0.88)', borderWidth: 1, borderColor: palette.line, borderRadius: 16, overflow: 'hidden' },
+  photo: { width: '100%', height: 170, backgroundColor: palette.surfaceSoft },
   cardTop: { flexDirection: 'row', alignItems: 'center', padding: 15 }, cardText: { flex: 1, gap: 5 },
-  date: { color: palette.creamMuted, fontSize: 12 }, result: { color: palette.cream, fontSize: 17 }, meta: { color: palette.creamMuted, fontSize: 13 },
-  starButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }, star: { color: palette.creamMuted, fontSize: 32 },
-  starActive: { color: palette.cream },
+  date: { color: palette.textMuted, fontSize: 12 }, result: { color: palette.text, fontSize: 17, fontWeight: '500' }, meta: { color: palette.textMuted, fontSize: 13 },
+  starButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }, star: { color: palette.textMuted, fontSize: 32 },
+  starActive: { color: palette.accentBright },
   actions: { alignItems: 'center', gap: 4 },
   deleteButton: { minWidth: 66, minHeight: 34, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
   deleteText: { color: palette.danger, fontSize: 12, fontWeight: '600' },
   confirmButton: { flex: 1 },
-  photoViewer: { flex: 1, backgroundColor: 'rgba(10, 5, 2, 0.96)', alignItems: 'center', justifyContent: 'center', padding: 18 },
-  fullPhoto: { width: '100%', height: '82%' }, closePhoto: { color: palette.creamMuted, fontSize: 13, marginTop: 12 },
+  photoViewer: { flex: 1, backgroundColor: 'rgba(3, 4, 6, 0.97)', alignItems: 'center', justifyContent: 'center', padding: 18 },
+  fullPhoto: { width: '100%', height: '82%' }, closePhoto: { color: palette.textMuted, fontSize: 13, marginTop: 12 },
 });
