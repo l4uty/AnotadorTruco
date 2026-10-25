@@ -8,6 +8,7 @@ import { SetupScreen } from '../components/setup-screen';
 import { AppModal, RusticButton, uiStyles } from '../components/ui';
 import { AppBackground } from '../components/app-background';
 import { HistoryModal } from '../components/history-modal';
+import { InstallPrompt } from '../components/install-prompt';
 import { MatchPhoto } from '../components/match-photo';
 import { gameStorage } from '../data/game-storage';
 import { deleteMatchPhoto, persistMatchPhoto } from '../data/photo-storage';
@@ -210,6 +211,8 @@ export function TrucoApp() {
 
       <HistoryModal visible={historyOpen} entries={history} onClose={() => setHistoryOpen(false)}
         onToggleFavorite={toggleFavorite} onDelete={deleteHistoryEntry} />
+
+      <InstallPrompt />
 
       <AppModal visible={event.type === 'pika-pika'} onRequestClose={() => setEvent(EMPTY_EVENT)}>
         <Text style={uiStyles.modalTitle}>Mano de PIKA PIKA</Text>
