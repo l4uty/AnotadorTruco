@@ -1,7 +1,11 @@
 const Jimp = require('jimp-compact');
 
 const SIZE = 1024;
-const OUTPUTS = ['assets/images/truco-icon.png', 'public/truco-icon.png'];
+const OUTPUTS = [
+  'assets/images/truco-icon.png',
+  'public/truco-icon.png',
+  'public/truco-favicon-v2.png',
+];
 
 const palette = {
   background: [9, 10, 13],

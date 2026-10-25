@@ -16,7 +16,8 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Truco" />
         <link rel="manifest" href="./manifest.json" />
-        <link rel="apple-touch-icon" href="./truco-icon.png" />
+        <link rel="icon" type="image/png" sizes="1024x1024" href="./truco-favicon-v2.png" />
+        <link rel="apple-touch-icon" href="./truco-favicon-v2.png" />
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: `
           html, body, #root { width: 100%; min-height: 100%; margin: 0; background: #090a0d; }

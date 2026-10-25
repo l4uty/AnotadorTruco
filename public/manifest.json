@@ -11,13 +11,13 @@
   "theme_color": "#090a0d",
   "icons": [
     {
-      "src": "./truco-icon.png",
+      "src": "./truco-favicon-v2.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./truco-icon.png",
+      "src": "./truco-favicon-v2.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
